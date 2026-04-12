@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../JETechnicalAssessmentTests/JETechnicalAssessmentTests.csproj" Id="eeb123e0-2552-44e7-85c2-6c0ca18e26ff" />
   <Project Path="JETechnicalAssessment.csproj" />
 </Solution>

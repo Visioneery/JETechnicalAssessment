@@ -1,5 +1,8 @@
-﻿namespace JETechnicalAssessment.Data;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace JETechnicalAssessment.Data;
+
+[ExcludeFromCodeCoverage]
 public class SearchHistory
 {
     public int Id { get; set; }
