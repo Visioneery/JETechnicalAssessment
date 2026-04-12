@@ -3,6 +3,7 @@
 @using JETechnicalAssessment.Models
 @using JETechnicalAssessment.Services
 @inject IMovieService MovieService
+@inject MovieSearchState MovieSearchState
 
 <div class="container py-5">
     <div class="row justify-content-center mb-4">
@@ -16,16 +17,38 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-3 p-md-4">
-                    <div class="input-group">
-                        <input @bind="query"
-                               @bind:event="oninput"
-                               class="form-control form-control-lg"
-                               placeholder="Movie title..." />
-                        <button @onclick="Search"
-                                class="btn btn-dark"
-                                disabled="@isSearching">
-                            @(isSearching ? "Searching..." : "Search")
-                        </button>
+                    <div class="position-relative">
+                        <div class="input-group input-group-lg shadow-sm">
+                            <input @bind="query"
+                                   @bind:event="oninput"
+                                   @onfocus="() => showRecentSearches = true"
+                                   @onkeydown="HandleKeyDown"
+                                   class="form-control shadow-none"
+                                   placeholder="Movie title..." />
+
+                            <button @onclick="() => Search()"
+                                    class="btn btn-dark px-4"
+                                    disabled="@isSearching">
+                                @(isSearching ? "Searching..." : "Search")
+                            </button>
+                        </div>
+
+                        @if (showRecentSearches && VisibleRecentSearches.Any())
+                        {
+                            <div class="position-absolute top-100 start-0 w-100 mt-2 z-3">
+                                <div class="list-group shadow-sm rounded-3 overflow-hidden">
+                                    @foreach (var search in VisibleRecentSearches)
+                                    {
+                                        <button type="button"
+                                                class="list-group-item list-group-item-action text-start py-3 border-0"
+                                                @onmousedown:preventDefault="true"
+                                                @onclick="() => Search(search)">
+                                            @search
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -39,13 +62,13 @@
             <p class="mt-3 text-muted">Loading results...</p>
         </div>
     }
-    else if (hasSearched && results?.Search is { Count: 0 })
+    else if (hasSearched && results.Search.Count == 0)
     {
         <div class="alert alert-light border text-center">
             No movies found.
         </div>
     }
-    else if (results?.Search is { Count: > 0 })
+    else if (results.Search.Count > 0)
     {
         <div class="row g-4">
             @foreach (var movie in results.Search)
@@ -60,15 +83,55 @@
 
 @code {
     private string query = string.Empty;
-    private OmdbSearchResults? results;
+    private SearchResults results = new();
     private bool isSearching;
     private bool hasSearched;
+    private bool showRecentSearches;
+    private List<string> recentSearches = [];
 
-    private async Task Search()
+    private IEnumerable<string> VisibleRecentSearches =>
+        string.IsNullOrWhiteSpace(query)
+            ? recentSearches
+            : recentSearches.Where(x => x.Contains(query, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
     {
+        recentSearches = await MovieService.GetRecentSearchesAsync();
+
+        if (!string.IsNullOrWhiteSpace(MovieSearchState.LastQuery) && MovieSearchState.LastResults is not null)
+        {
+            query = MovieSearchState.LastQuery;
+            results = MovieSearchState.LastResults;
+            hasSearched = true;
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "Enter":
+                await Search();
+                break;
+
+            case "Escape":
+                showRecentSearches = false;
+                break;
+        }
+    }
+
+    private async Task Search(string? search = null)
+    {
+        showRecentSearches = false;
+
+        if (search is not null)
+        {
+            query = search;
+        }
+
         if (string.IsNullOrWhiteSpace(query))
         {
-            results = new OmdbSearchResults();
+            results = new();
             hasSearched = true;
             return;
         }
@@ -76,8 +139,17 @@
         isSearching = true;
         hasSearched = true;
 
-        results = await MovieService.SearchMoviesAsync(query);
+        try
+        {
+            results = await MovieService.SearchMoviesAsync(query);
+            recentSearches = await MovieService.GetRecentSearchesAsync();
 
-        isSearching = false;
+            MovieSearchState.LastQuery = query;
+            MovieSearchState.LastResults = results;
+        }
+        finally
+        {
+            isSearching = false;
+        }
     }
 }

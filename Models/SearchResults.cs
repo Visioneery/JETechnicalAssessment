@@ -2,7 +2,7 @@
 
 namespace JETechnicalAssessment.Models;
 
-public class OmdbSearchResults : OmdbBaseResponse
+public class SearchResults : OmdbBaseResponse
 {
     public List<Search> Search { get; set; } = [];
     public string totalResults { get; set; } = string.Empty;

@@ -15,8 +15,8 @@ public class OmdbClient : IOmdbClient
         _apiKey = config["Omdb:ApiKey"] ?? throw new Exception("ApiKey missing");
     }
 
-    public async Task<OmdbSearchResults?> SearchMoviesAsync(string query)
-        => await SendRequestAsync<OmdbSearchResults>($"?apikey={_apiKey}&s={query}");
+    public async Task<SearchResults?> SearchMoviesAsync(string query)
+        => await SendRequestAsync<SearchResults>($"?apikey={_apiKey}&s={query}");
 
     public async Task<MovieDetails?> GetMovieDetailsAsync(string imdbId)
         => await SendRequestAsync<MovieDetails>($"?apikey={_apiKey}&i={imdbId}&plot=full");

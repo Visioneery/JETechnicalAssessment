@@ -1,26 +1,25 @@
 ﻿using JETechnicalAssessment.Intergrations.Omdb;
 using JETechnicalAssessment.Models;
+using JETechnicalAssessment.Repositories;
 
 namespace JETechnicalAssessment.Services;
 
-public class MovieService(IOmdbClient omdbClient) : IMovieService
+public class MovieService(IOmdbClient omdbClient, ISearchHistoryRepository searchHistoryRepository) : IMovieService
 {
-    public async Task<OmdbSearchResults> SearchMoviesAsync(string query)
+    public async Task<SearchResults> SearchMoviesAsync(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
-            return new OmdbSearchResults { Response = "False" };
+            return new SearchResults { Response = "False" };
 
         var result = await omdbClient.SearchMoviesAsync(query);
 
-        // 2. Business Logic: If the search was successful, save it to the DB
         if (result != null && result.Response == "True")
         {
-            // We don't 'await' this if we don't want to block the UI, 
-            // but for a reliable history, we await it here.
-            //await _historyRepo.UpsertSearchAsync(title);
+            // awaiting unless such things happen in some hosted service or background queues ( depends on the requirements and use case )
+            await searchHistoryRepository.SaveSearchAsync(query);
         }
 
-        return result ?? new OmdbSearchResults { Response = "False" };
+        return result ?? new SearchResults { Response = "False" };
     }
 
     public async Task<MovieDetails?> GetMovieDetailsAsync(string imdbId)
@@ -29,4 +28,7 @@ public class MovieService(IOmdbClient omdbClient) : IMovieService
 
         return await omdbClient.GetMovieDetailsAsync(imdbId);
     }
+
+    public Task<List<string>> GetRecentSearchesAsync()
+        => searchHistoryRepository.GetRecentQueriesAsync();
 }

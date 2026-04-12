@@ -4,7 +4,9 @@ namespace JETechnicalAssessment.Services;
 
 public interface IMovieService
 {
-    Task<OmdbSearchResults> SearchMoviesAsync(string query);
+    Task<SearchResults> SearchMoviesAsync(string query);
 
     Task<MovieDetails?> GetMovieDetailsAsync(string imdbId);
+
+    Task<List<string>> GetRecentSearchesAsync();
 }

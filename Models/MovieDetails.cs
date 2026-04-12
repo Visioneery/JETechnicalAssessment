@@ -2,6 +2,7 @@
 
 namespace JETechnicalAssessment.Models;
 
+// In real project this class should be moved also to Integrations , and then mapped to our own DTO with builder patters or automapper , but I decded not to overcomplicate project with more layers
 public class MovieDetails : OmdbBaseResponse
 {
     public string Title { get; set; } = string.Empty;
