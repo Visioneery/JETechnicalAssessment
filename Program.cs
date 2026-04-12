@@ -1,10 +1,22 @@
 using JETechnicalAssessment.Components;
+using JETechnicalAssessment.Intergrations.Omdb;
+using JETechnicalAssessment.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient<IOmdbClient, OmdbClient>((sp, client) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = config["Omdb:BaseUrl"] ?? throw new Exception("OMDb BaseUrl missing");
+
+    client.BaseAddress = new Uri(baseUrl);
+});
+
+builder.Services.AddScoped<IMovieService, MovieService>();
 
 var app = builder.Build();
 

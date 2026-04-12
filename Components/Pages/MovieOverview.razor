@@ -1,0 +1,71 @@
+﻿@page "/details/{imdbId}"
+@inject IMovieService MovieService
+@inject NavigationManager Nav
+
+<div class="container mt-5">
+    <div class="mb-4">
+        <a href="/" class="btn btn-outline-dark btn-sm">
+            &larr; Back to Search
+        </a>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status"></div>
+            <p>Loading movie details...</p>
+        </div>
+    }
+    else if (movie is null)
+    {
+        <div class="alert alert-warning">
+            Movie not found.
+        </div>
+    }
+    else if (movie.Response == "False")
+    {
+        <div class="alert alert-danger mt-4">
+            <strong>API Error:</strong> @movie.Error
+        </div>    
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <img src="@(movie.Poster != "N/A" ? movie.Poster : "/images/poster-placeholder.svg")"
+                     class="img-fluid rounded shadow" alt="@movie.Title"
+                     onerror="this.onerror=null;this.src='/images/poster-placeholder.svg';" />
+            </div>
+            <div class="col-md-8">
+                <h1 class="display-4">@movie.Title <small class="text-muted">(@movie.Year)</small></h1>
+                <p class="lead"><strong>Director:</strong> @movie.Director</p>
+                <p><strong>Cast:</strong> @movie.Actors</p>
+                <hr />
+                <h5>Plot</h5>
+                <p>@movie.Plot</p>
+                
+                <div class="mt-4">
+                    <h5>Ratings</h5>
+                    @foreach (var rating in movie.Ratings)
+                    {
+                        <span class="badge bg-primary me-2">@rating.Source: @rating.Value</span>
+                    }
+                    <span class="badge bg-warning text-dark">IMDb: @movie.imdbRating/10</span>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string imdbId { get; set; } = string.Empty;
+    private MovieDetails? movie;
+    private bool isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        movie = await MovieService.GetMovieDetailsAsync(imdbId);
+        isLoading = false;
+    }
+}

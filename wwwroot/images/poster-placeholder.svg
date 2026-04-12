@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600" role="img" aria-label="No poster available">
+	<rect width="400" height="600" fill="#f2f2f2"/>
+	<rect x="90" y="120" width="220" height="320" fill="#c7c7c7"/>
+	<text x="200" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#777">
+		No Poster Available
+	</text>
+</svg>
