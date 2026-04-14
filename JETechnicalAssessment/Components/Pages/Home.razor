@@ -22,6 +22,7 @@
                             <input @bind="query"
                                    @bind:event="oninput"
                                    @onfocus="() => showRecentSearches = true"
+                                   @onblur="() => showRecentSearches = false"
                                    @onkeydown="HandleKeyDown"
                                    class="form-control shadow-none"
                                    placeholder="Movie title..." />
