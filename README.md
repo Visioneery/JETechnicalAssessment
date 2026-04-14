@@ -53,10 +53,10 @@ dotnet ef database update
 
 ### Add a new migration
 
-Migrations are stored in `Data\\Migrations`:
+Migrations are stored in `JETechnicalAssessment\\Data\\Migrations`:
 
 ```powershell
-dotnet ef migrations add InitialCreate -o Data\\Migrations
+dotnet ef migrations add MigrationName -o Data\\Migrations
 ```
 
 ### Update EF tools if needed
