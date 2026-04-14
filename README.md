@@ -45,6 +45,8 @@ FYI you can also store key in your user secrets
 
 This project uses SQLite with EF Core migrations.
 
+Database will be auto-generated on the first run if it does not exist.
+
 ### Create or update the database
 
 ```powershell
