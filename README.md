@@ -9,6 +9,7 @@ A Blazor application for searching movies with OMDb, showing movie details, and 
 - Entity Framework Core 10
 - SQLite
 - OMDb API
+- Nunit, Moq
 
 ## Features
 
@@ -79,3 +80,16 @@ Example:
 ```powershell
 sqlite3 .\\app.db
 ```
+## Local setup
+
+- Clone repo
+- Open sln in Visual Studio
+- Update user secrets or `appsettings.Development.json` with your OMDb API key
+- Run application
+
+
+## Useful notes
+
+- Mentioned in the requirements "1. Movie search by title." 
+  - Implemented by search because it does not require the exact name and adds more flexibility in what user types
+- Details of each movie are returned using search by id
